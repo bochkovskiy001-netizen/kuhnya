@@ -1,1 +1,774 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#FBF6EE">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Кухня недели">
+<title>Кухня недели</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FBF6EE;--card:#FFFDF9;--ink:#2E2721;--ink-2:#544A40;--dim:#8A7C6D;
+ --line:rgba(46,39,33,.10);--line-2:rgba(46,39,33,.055);
+ --green:#5F7350;--a:#C2603C;--soft:#F7E9DF;--yel:#D9A521;--red:#A8402F}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Manrope',system-ui,-apple-system,sans-serif;
+ font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;padding-bottom:calc(78px + env(safe-area-inset-bottom))}
+h1,h2,h3{margin:0}
+header{position:sticky;top:0;z-index:40;padding:calc(18px + env(safe-area-inset-top)) 16px 13px;
+ background:rgba(251,246,238,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--line-2)}
+.eyebrow{font-size:10.5px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--a)}
+h1{font-family:'Fraunces',serif;font-weight:400;font-size:28px;line-height:1.1;margin-top:3px}
+h1 b{font-weight:600}
+.macro{display:flex;gap:5px;margin-top:11px;overflow-x:auto;scrollbar-width:none}
+.macro::-webkit-scrollbar{display:none}
+.mc{background:var(--card);border:1px solid var(--line);border-radius:9px;padding:6px 10px;white-space:nowrap;flex:0 0 auto}
+.mc i{display:block;font-style:normal;font-size:9.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--dim)}
+.mc b{font-size:14.5px;font-weight:700}
+nav{position:fixed;bottom:0;left:0;right:0;z-index:50;display:grid;grid-template-columns:repeat(5,1fr);
+ background:rgba(255,253,249,.96);backdrop-filter:blur(14px);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+nav button{background:none;border:none;padding:10px 1px 11px;cursor:pointer;font-family:inherit;font-size:9.5px;
+ font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--dim);transition:color .18s}
+nav button em{display:block;font-style:normal;font-size:18px;margin-bottom:2px;filter:grayscale(1) opacity(.5);transition:filter .18s}
+nav button.on{color:var(--a)}
+nav button.on em{filter:none}
+nav button:focus-visible{outline:2px solid var(--a);outline-offset:-4px;border-radius:8px}
+.pip{display:inline-block;background:var(--a);color:#fff;border-radius:20px;font-size:8.5px;padding:1px 4px;margin-left:1px;vertical-align:1px}
+main{padding:16px 14px 8px}
+.panel{display:none}
+.panel.on{display:block;animation:up .25s ease}
+@keyframes up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
+.day{margin-bottom:24px}
+.day-h{display:flex;align-items:center;gap:12px;background:var(--yel);border:2.5px solid var(--ink);
+ border-radius:12px;padding:12px 14px;margin-bottom:11px;box-shadow:3px 3px 0 var(--ink)}
+.day-h.today{background:var(--ink);border-color:var(--ink)}
+.day-h.today .dnum,.day-h.today .dow{color:var(--yel)}
+.day-h.today .dnum{border-right-color:rgba(217,165,33,.4)}
+.day-h.today .dsub,.day-h.today .dkcal i{color:rgba(217,165,33,.75)}
+.day-h.today .dkcal b{color:var(--yel)}
+.dnum{font-family:'Fraunces',serif;font-size:27px;font-weight:600;line-height:.9;color:var(--ink);border-right:2px solid var(--ink);padding-right:12px}
+.dwrap{flex:1;min-width:0}
+.dow{display:block;font-family:'Fraunces',serif;font-size:19px;font-weight:600;line-height:1.1;color:var(--ink)}
+.dsub{display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#6B5310;margin-top:2px}
+.dkcal{text-align:right;flex:0 0 auto}
+.dkcal b{display:block;font-family:'Fraunces',serif;font-size:19px;font-weight:600;line-height:1;color:var(--ink)}
+.dkcal i{display:block;font-style:normal;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#6B5310;margin-top:2px}
+.dish{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--card);
+ border:1px solid var(--line);border-left:4px solid var(--dc,var(--a));border-radius:13px;padding:13px;
+ margin-bottom:8px;cursor:pointer;font-family:inherit;color:inherit;transition:transform .14s;box-shadow:0 1px 5px rgba(46,39,33,.04)}
+.dish:active{transform:scale(.985)}
+.dish:focus-visible{outline:2px solid var(--dc);outline-offset:2px}
+.eat{flex:0 0 26px;height:26px;border:2px solid #C9BEB0;border-radius:8px;display:grid;place-items:center;
+ background:transparent;cursor:pointer;padding:0;transition:.16s}
+.eat svg{width:14px;height:14px;opacity:0;transition:opacity .14s}
+.eat.on{background:var(--green);border-color:var(--green)}
+.eat.on svg{opacity:1}
+.eat:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+.demo{font-size:25px;line-height:1;flex:0 0 auto}
+.dtxt{flex:1;min-width:0}
+.dwhen{font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--dc,var(--a))}
+.dname{font-family:'Fraunces',serif;font-size:17px;font-weight:600;line-height:1.2;margin:2px 0 3px}
+.dmeta{font-size:12.5px;color:var(--dim)}
+.dkc{font-family:'Fraunces',serif;font-size:15.5px;font-weight:600;color:var(--dc);white-space:nowrap;flex:0 0 auto;text-align:right}
+.dkc small{display:block;font-family:'Manrope',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-top:1px}
+.dish.eaten{opacity:.5}
+.dish.eaten .dname{text-decoration:line-through}
+
+.scrim{position:fixed;inset:0;z-index:60;background:rgba(46,39,33,.5);backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:opacity .28s}
+.scrim.on{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:61;max-height:93vh;overflow-y:auto;-webkit-overflow-scrolling:touch;
+ background:var(--bg);border-radius:22px 22px 0 0;transform:translateY(101%);transition:transform .3s cubic-bezier(.32,.72,0,1);
+ padding-bottom:calc(30px + env(safe-area-inset-bottom))}
+.sheet.on{transform:none}
+.grab{position:sticky;top:0;background:var(--bg);padding:9px 0 4px;text-align:center;z-index:2}
+.grab i{display:inline-block;width:38px;height:4px;border-radius:4px;background:var(--line)}
+.s-hero{padding:8px 20px 18px;border-bottom:1px solid var(--line)}
+.s-emo{font-size:44px;line-height:1}
+.s-when{font-size:10.5px;font-weight:700;letter-spacing:.17em;text-transform:uppercase;color:var(--dc);margin-top:9px}
+.s-name{font-family:'Fraunces',serif;font-size:27px;font-weight:600;line-height:1.15;margin:3px 0 8px}
+.s-meta{display:flex;gap:6px;flex-wrap:wrap}
+.s-meta span{font-size:12px;font-weight:600;background:var(--soft);color:var(--dc);padding:5px 11px;border-radius:8px}
+.nut{margin:0 20px;background:var(--ink);border-radius:15px;padding:18px 17px;color:#fff}
+.nut-top{display:flex;align-items:baseline;gap:8px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,.15)}
+.nut-top b{font-family:'Fraunces',serif;font-size:34px;font-weight:600;line-height:.95}
+.nut-top span{font-size:12.5px;opacity:.65;line-height:1.35}
+.nut-m{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.nut-m div{background:rgba(255,255,255,.09);border-radius:9px;padding:9px 6px;text-align:center}
+.nut-m i{display:block;font-style:normal;font-size:9.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;opacity:.6}
+.nut-m b{display:block;font-family:'Fraunces',serif;font-size:20px;font-weight:600;margin-top:2px}
+.nut-split{margin-top:15px;padding-top:14px;border-top:1px solid rgba(255,255,255,.15)}
+.nut-split>i{display:block;font-style:normal;font-size:9.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;opacity:.55;margin-bottom:9px}
+.nsr{display:flex;align-items:baseline;gap:9px;padding:7px 0;font-size:13.5px}
+.nsr em{font-style:normal;flex:0 0 auto;font-size:15px}
+.nsr span{flex:1;opacity:.85}
+.nsr b{font-family:'Fraunces',serif;font-size:16px;font-weight:600;white-space:nowrap}
+.nsr small{font-size:11px;opacity:.55;white-space:nowrap;margin-left:5px}
+.nut-bar{display:flex;height:6px;border-radius:4px;overflow:hidden;margin-top:11px}
+.nut-bar i{display:block;height:100%}
+.s-sec{font-size:10.5px;font-weight:700;letter-spacing:.19em;text-transform:uppercase;color:var(--dim);padding:22px 20px 10px}
+.keys{margin:0 20px;background:var(--card);border:1.5px solid var(--dc);border-radius:14px;padding:4px 16px 14px}
+.key{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line-2)}
+.key:last-child{border:none}
+.key em{font-style:normal;font-size:20px;flex:0 0 auto;line-height:1.3}
+.key div{flex:1}
+.key b{display:block;font-size:14px;font-weight:700;margin-bottom:2px}
+.key span{display:block;font-size:13px;line-height:1.55;color:var(--ink-2)}
+.ing{padding:0 20px}
+.ing-g{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--dc);padding:12px 0 3px}
+.ing div.ir{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--line-2);font-size:14.5px}
+.ing div.ir:last-child{border:none}
+.ing b{margin-left:auto;font-weight:700;color:var(--ink);font-size:13.5px;white-space:nowrap}
+.steps{padding:0 20px}
+.step{display:flex;gap:14px;padding:13px 0;border-bottom:1px solid var(--line-2)}
+.step:last-child{border:none}
+.snum{flex:0 0 25px;height:25px;border-radius:50%;background:var(--dc);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:800;margin-top:1px}
+.stxt{flex:1;font-size:14.5px;line-height:1.62;color:var(--ink-2)}
+.stxt b{color:var(--ink);font-weight:700}
+.cue{display:block;margin-top:6px;font-size:13px;color:var(--dim);border-left:2px solid var(--soft);padding-left:10px}
+.look{padding:4px 20px 0;display:flex;gap:8px}
+.look a{flex:1;text-align:center;text-decoration:none;background:var(--card);border:1px solid var(--line);border-radius:11px;padding:13px 8px;font-size:13px;font-weight:700;color:var(--dc)}
+.look a:active{background:var(--soft)}
+.look a em{display:block;font-style:normal;font-size:19px;margin-bottom:3px}
+.chef{margin:0 20px;background:var(--dc);border-radius:14px;padding:17px 18px;color:#fff}
+.chef i{display:block;font-style:normal;font-size:10.5px;font-weight:700;letter-spacing:.17em;text-transform:uppercase;opacity:.75;margin-bottom:7px}
+.chef h4{font-family:'Fraunces',serif;font-size:17px;font-weight:600;margin:0 0 7px;line-height:1.25}
+.chef p{margin:0;font-size:14px;line-height:1.62;opacity:.94}
+.close{margin:24px 20px 0;width:calc(100% - 40px);padding:15px;background:var(--dc);color:#fff;border:none;border-radius:12px;
+ font-family:inherit;font-size:13px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;cursor:pointer}
+
+/* ══ ДНЕВНИК ══ */
+.today-c{background:var(--ink);border-radius:17px;padding:20px 18px;margin-bottom:14px;color:#fff}
+.today-h{display:flex;align-items:baseline;gap:9px;margin-bottom:16px}
+.today-h b{font-family:'Fraunces',serif;font-size:21px;font-weight:600;flex:1}
+.today-h span{font-size:12px;opacity:.6;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+.ring{display:flex;align-items:center;gap:16px;margin-bottom:17px}
+.ring svg{flex:0 0 92px}
+.ring-t{flex:1}
+.ring-t b{display:block;font-family:'Fraunces',serif;font-size:30px;font-weight:600;line-height:1}
+.ring-t i{display:block;font-style:normal;font-size:12.5px;opacity:.62;margin-top:4px}
+.ring-t u{display:block;text-decoration:none;font-size:12.5px;margin-top:8px;font-weight:600}
+.mrow{padding:9px 0;border-bottom:1px solid rgba(255,255,255,.12)}
+.mrow:last-child{border:none}
+.mrow-t{display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px}
+.mrow-t b{font-weight:700}
+.mrow-t span{opacity:.6}
+.mtrack{height:5px;background:rgba(255,255,255,.15);border-radius:3px;overflow:hidden}
+.mtrack i{display:block;height:100%;border-radius:3px;transition:width .4s}
+.d-nav{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;scrollbar-width:none;padding:2px}
+.d-nav::-webkit-scrollbar{display:none}
+.d-nav button{flex:0 0 auto;background:var(--card);border:1.5px solid var(--line);border-radius:11px;
+ padding:9px 12px;cursor:pointer;font-family:inherit;text-align:center;color:var(--ink);min-width:54px}
+.d-nav button i{display:block;font-style:normal;font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+.d-nav button b{display:block;font-family:'Fraunces',serif;font-size:17px;font-weight:600;margin-top:1px}
+.d-nav button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.d-nav button.on i{color:rgba(255,255,255,.6)}
+.d-nav button.has{border-color:var(--green)}
+.ate{display:flex;align-items:center;gap:11px;background:var(--card);border:1px solid var(--line);
+ border-radius:12px;padding:12px 13px;margin-bottom:6px}
+.ate em{font-style:normal;font-size:20px;flex:0 0 auto}
+.ate div{flex:1;min-width:0}
+.ate b{display:block;font-size:14.5px;font-weight:600;line-height:1.25}
+.ate span{display:block;font-size:11.5px;color:var(--dim);margin-top:2px}
+.ate u{text-decoration:none;font-family:'Fraunces',serif;font-size:16px;font-weight:600;color:var(--a);white-space:nowrap}
+.ate .x{background:none;border:none;color:var(--dim);font-size:15px;cursor:pointer;padding:0 0 0 5px}
+.addbtn{width:100%;padding:14px;background:var(--card);border:1.5px dashed var(--line);border-radius:12px;
+ cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;color:var(--dim);margin-top:6px}
+.addbtn:active{background:var(--soft)}
+.quick{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.quick button{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:8px 13px;
+ cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;color:var(--ink-2)}
+.quick button:active{background:var(--soft)}
+
+.modal{position:fixed;inset:0;z-index:70;display:none;place-items:center;padding:18px;background:rgba(46,39,33,.55);backdrop-filter:blur(4px)}
+.modal.on{display:grid}
+.modal-b{background:var(--bg);border-radius:18px;padding:22px 20px;width:100%;max-width:380px;max-height:88vh;overflow-y:auto}
+.modal-b h3{font-family:'Fraunces',serif;font-size:21px;font-weight:600;margin-bottom:4px}
+.modal-b .sub{font-size:13px;color:var(--dim);margin-bottom:16px}
+.g2{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.g2 input{margin-bottom:0}
+.pay-list{max-height:150px;overflow-y:auto;background:var(--card);border:1px solid var(--line);border-radius:11px;padding:11px 13px;margin-bottom:16px;font-size:13.5px;line-height:1.75}
+.pay-list div{display:flex;gap:8px}
+.pay-list b{margin-left:auto;color:var(--dim);font-weight:700;font-size:12.5px}
+
+.wk{background:var(--card);border:2.5px solid var(--ink);border-radius:15px;padding:19px 17px;margin-bottom:18px;box-shadow:3px 3px 0 var(--ink)}
+.wk h3{font-family:'Fraunces',serif;font-size:19px;font-weight:600;margin-bottom:3px}
+.wk .wsub{font-size:12.5px;color:var(--dim);margin-bottom:15px}
+.wrow{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line-2)}
+.wrow:last-child{border:none}
+.wrow .wl{flex:0 0 78px;font-size:12.5px;font-weight:700;color:var(--ink-2)}
+.wtrack{flex:1;height:20px;background:#EFE8DC;border-radius:5px;position:relative;overflow:hidden}
+.wtrack i{position:absolute;left:0;top:0;height:100%;border-radius:5px}
+.wtrack u{position:absolute;top:-2px;bottom:-2px;width:2.5px;background:var(--ink);text-decoration:none}
+.wrow .wv{flex:0 0 74px;text-align:right;font-size:12.5px;font-weight:700;white-space:nowrap}
+.wrow .wv s{text-decoration:none;color:var(--dim);font-weight:600;font-size:11px}
+.wnote{margin-top:14px;padding-top:13px;border-top:1px solid var(--line-2);font-size:13px;line-height:1.6;color:var(--ink-2)}
+.wnote b{color:var(--ink)}
+.sch-lead{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:17px;margin-bottom:16px;font-size:14px;line-height:1.62;color:var(--ink-2)}
+.sch-lead b{color:var(--ink)}
+.sch{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--sc);border-radius:13px;margin-bottom:9px;overflow:hidden}
+.sch-h{display:flex;align-items:center;gap:12px;padding:15px;cursor:pointer;width:100%;background:none;border:none;font-family:inherit;text-align:left;color:inherit}
+.sch-h em{font-style:normal;font-size:23px;flex:0 0 auto}
+.sch-h span{flex:1;font-family:'Fraunces',serif;font-size:17px;font-weight:600}
+.sch-h i{font-style:normal;color:var(--dim);font-size:13px;transition:transform .2s}
+.sch.open .sch-h i{transform:rotate(180deg)}
+.sch-b{display:none;padding:0 15px 6px;border-top:1px solid var(--line-2)}
+.sch.open .sch-b{display:block}
+.rule{padding:14px 0;border-bottom:1px solid var(--line-2)}
+.rule:last-child{border:none}
+.rule b{display:block;font-size:14.5px;font-weight:700;margin-bottom:4px;color:var(--sc)}
+.rule p{margin:0;font-size:14px;line-height:1.62;color:var(--ink-2)}
+.why{display:block;margin-top:7px;font-size:13px;color:var(--dim);border-left:2px solid var(--line);padding-left:10px}
+.hint{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:14px 15px;margin-bottom:16px;font-size:13.5px;line-height:1.6;color:var(--ink-2)}
+.hint b{color:var(--ink)}
+.sec{display:flex;align-items:center;gap:9px;margin:24px 3px 9px}
+.sec:first-child{margin-top:0}
+.sec em{font-style:normal;font-size:17px}
+.sec h3{font-size:11px;font-weight:700;letter-spacing:.19em;text-transform:uppercase;color:var(--dim)}
+.sec i{flex:1;height:1px;background:var(--line);font-style:normal}
+.sec b{font-size:11.5px;font-weight:700;color:var(--dim)}
+.item{display:flex;align-items:center;gap:11px;width:100%;text-align:left;background:var(--card);border:1.5px solid var(--line);
+ border-radius:12px;padding:12px 13px;margin-bottom:6px;cursor:pointer;font-family:inherit;color:inherit;font-size:15px;transition:.18s}
+.box{flex:0 0 22px;height:22px;border:1.8px solid #C9BEB0;border-radius:7px;display:grid;place-items:center;transition:.16s}
+.box svg{width:13px;height:13px;opacity:0;transition:opacity .14s}
+.iemo{font-size:19px;flex:0 0 auto}
+.inm{flex:1;min-width:0}
+.iqty{font-size:12.5px;font-weight:700;color:var(--dim);white-space:nowrap}
+.item.sel{border-color:var(--a);background:var(--soft)}
+.item.sel .box{background:var(--a);border-color:var(--a)}
+.item.sel .box svg{opacity:1}
+.item.paid{opacity:.38;background:transparent;border-color:var(--line-2)}
+.item.paid .box{background:var(--green);border-color:var(--green)}
+.item.paid .box svg{opacity:1}
+.item.paid .inm{text-decoration:line-through}
+.paidtag{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--green);white-space:nowrap}
+.tray{position:fixed;left:12px;right:12px;bottom:calc(80px + env(safe-area-inset-bottom));z-index:45;background:var(--ink);
+ color:#fff;border-radius:15px;padding:13px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 8px 28px rgba(46,39,33,.3);
+ transform:translateY(160%);transition:transform .3s cubic-bezier(.32,.72,0,1)}
+.tray.on{transform:none}
+.tray-n{flex:1;font-size:13.5px;line-height:1.35}
+.tray-n b{display:block;font-family:'Fraunces',serif;font-size:20px;font-weight:600}
+.tray-n span{opacity:.7;font-size:12.5px}
+.tray button{background:var(--a);color:#fff;border:none;border-radius:10px;padding:12px 16px;font-family:inherit;
+ font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer}
+.tray .clr{background:transparent;border:1px solid rgba(255,255,255,.25);padding:12px;opacity:.8}
+.rcpt{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 20px;margin-bottom:14px;box-shadow:0 3px 16px rgba(46,39,33,.05)}
+.rcpt-t{font-size:10.5px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);text-align:center;padding-bottom:15px;border-bottom:1.5px dashed var(--line)}
+.rr{display:flex;justify-content:space-between;padding:11px 0;font-size:14px;border-bottom:1px dashed var(--line-2)}
+.rr b{font-weight:700}
+.rtot{display:flex;justify-content:space-between;align-items:baseline;margin-top:15px;padding-top:14px;border-top:1.5px dashed var(--line)}
+.rtot i{font-style:normal;font-size:10.5px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+.rtot b{font-family:'Fraunces',serif;font-size:33px;font-weight:600;color:var(--a)}
+.bar{height:7px;background:#EDE4D8;border-radius:5px;overflow:hidden;margin-top:17px}
+.bar i{display:block;height:100%;background:var(--green);width:0;border-radius:5px;transition:width .35s}
+.barl{font-size:11.5px;font-weight:600;color:var(--dim);text-align:center;margin-top:8px}
+.blk{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:19px 17px;margin-bottom:13px}
+.blk h3{font-size:10.5px;font-weight:700;letter-spacing:.19em;text-transform:uppercase;color:var(--dim);margin-bottom:15px}
+label{display:block;font-size:12.5px;font-weight:600;color:var(--dim);margin-bottom:6px}
+input{width:100%;background:var(--card);border:1.5px solid var(--line);border-radius:11px;padding:13px;font-family:inherit;
+ font-size:16px;font-weight:700;color:var(--ink);margin-bottom:14px}
+input:focus{outline:none;border-color:var(--a)}
+.btn{width:100%;padding:14px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;font-size:12.5px;
+ font-weight:700;letter-spacing:.13em;text-transform:uppercase;background:var(--a);color:#fff}
+.btn.g{background:transparent;border:1.5px solid var(--line);color:var(--dim);margin-top:9px}
+.trip{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:14px 15px;margin-bottom:8px}
+.trip-h{display:flex;align-items:baseline;gap:10px}
+.trip-h em{font-style:normal;font-family:'Fraunces',serif;font-size:16px;font-weight:600;flex:1}
+.trip-h b{font-family:'Fraunces',serif;font-size:19px;font-weight:600;color:var(--a);white-space:nowrap}
+.trip-h .x{background:none;border:none;color:var(--dim);font-size:16px;cursor:pointer;padding:0 0 0 4px}
+.trip-i{margin-top:8px;font-size:13px;line-height:1.65;color:var(--dim)}
+.trip-d{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-top:7px}
+.none{text-align:center;color:var(--dim);font-size:13.5px;padding:20px 8px;line-height:1.6}
+.save-c{background:var(--soft);border:1px solid rgba(194,96,60,.25);border-radius:14px;padding:16px 15px;margin-bottom:14px;font-size:13.5px;line-height:1.62;color:var(--ink-2)}
+.save-c b{color:var(--ink);display:block;margin-bottom:6px;font-size:14px}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow" id="hd-date">Воскресный заезд</div>
+  <h1>Кухня <b>недели</b></h1>
+  <div class="macro">
+    <div class="mc"><i>ккал</i><b>2300</b></div><div class="mc"><i>белки</i><b>155</b></div>
+    <div class="mc"><i>жиры</i><b>85</b></div><div class="mc"><i>углеводы</i><b>200</b></div>
+    <div class="mc"><i>клетчатка</i><b>30</b></div>
+  </div>
+</header>
+<script>
+window.addEventListener('error',function(e){
+  var m=document.querySelector('main');
+  if(m&&!m.dataset.err){m.dataset.err=1;
+    m.insertAdjacentHTML('afterbegin','<div style="background:#F7E2DE;border:1px solid #A8402F;border-radius:12px;padding:16px;margin-bottom:14px;font-size:13px;line-height:1.6;color:#2E2721"><b>Ошибка при загрузке</b><br>'+
+    (e.message||'')+'<br><br>Попробуй открыть файл в Safari или Chrome. Если не помогло — покажи этот текст в чате.</div>');}
+});
+</script>
+<main>
+  <section class="panel on" id="p-menu"></section>
+  <section class="panel" id="p-diary"></section>
+  <section class="panel" id="p-school"></section>
+  <section class="panel" id="p-list"></section>
+  <section class="panel" id="p-money">
+    <div class="rcpt"><div class="rcpt-t">Корзина недели</div>
+      <div class="rr"><span>Куплено позиций</span><b id="m-done">0</b></div>
+      <div class="rr"><span>Осталось взять</span><b id="m-left">0</b></div>
+      <div class="rr"><span>Заходов в магазин</span><b id="m-trips">0</b></div>
+      <div class="rtot"><i>Потрачено</i><b><span id="m-sum">0</span> ₽</b></div>
+      <div class="bar"><i id="m-bar"></i></div><div class="barl" id="m-pct">Корзина пуста</div></div>
+    <div class="blk"><h3>Покупки</h3><div id="log"></div></div>
+    <div class="save-c"><b>💾 Резервная копия</b>Данные хранятся в этом браузере. Если чистишь историю или меняешь устройство — выгрузи файл заранее и потом загрузи обратно.</div>
+    <button class="btn" id="export">Выгрузить данные</button>
+    <button class="btn g" id="import-b">Загрузить из файла</button>
+    <input type="file" id="import-f" accept=".json" hidden>
+    <button class="btn g" id="reset" style="margin-bottom:20px">Сбросить всё</button>
+  </section>
+</main>
+<div class="tray" id="tray">
+  <div class="tray-n"><b><span id="t-n">0</span> позиций</b><span>отмечено в списке</span></div>
+  <button class="clr" id="t-clr" aria-label="Снять выделение">✕</button>
+  <button id="t-pay">Оформить</button>
+</div>
+<nav>
+  <button class="on" data-p="p-menu"><em>🍳</em>Меню</button>
+  <button data-p="p-diary"><em>📔</em>Дневник</button>
+  <button data-p="p-school"><em>👨‍🍳</em>Школа</button>
+  <button data-p="p-list"><em>🧺</em>Список<span class="pip" id="pip" hidden></span></button>
+  <button data-p="p-money"><em>🧾</em>Чек</button>
+</nav>
+<div class="modal" id="pay"><div class="modal-b">
+  <h3>Оформить покупку</h3><div class="sub" id="pay-sub">—</div>
+  <div class="pay-list" id="pay-list"></div>
+  <label for="pay-name">Где купил</label><input type="text" id="pay-name" placeholder="Магазин, рынок, лавка…">
+  <label for="pay-sum">Сумма, ₽</label><input type="number" id="pay-sum" inputmode="decimal" placeholder="0">
+  <button class="btn" id="pay-ok">Записать в чек</button><button class="btn g" id="pay-no">Отмена</button>
+</div></div>
+<div class="modal" id="addm"><div class="modal-b">
+  <h3>Добавить своё</h3><div class="sub">Кафе, перекус, напиток — что угодно вне плана</div>
+  <label for="a-name">Что съел или выпил</label><input type="text" id="a-name" placeholder="Хинкали, кофе, пиво…">
+  <label for="a-kcal">Калории</label><input type="number" id="a-kcal" inputmode="decimal" placeholder="0">
+  <label>Б / Ж / У, г — если знаешь</label>
+  <div class="g2"><input type="number" id="a-p" inputmode="decimal" placeholder="Б">
+   <input type="number" id="a-f" inputmode="decimal" placeholder="Ж">
+   <input type="number" id="a-c" inputmode="decimal" placeholder="У"></div>
+  <button class="btn" id="a-ok" style="margin-top:16px">Записать в дневник</button>
+  <button class="btn g" id="a-no">Отмена</button>
+</div></div>
+<div class="scrim" id="scrim"></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Рецепт"></div>
+
+<script>
+var lastFocus=null;
+const C={beef:{c:'#8C3F4A',s:'#F4E3E4'},pork:{c:'#C2603C',s:'#F7E9DF'},bird:{c:'#B07C2A',s:'#F7EEDA'},
+ fish:{c:'#4A6C7A',s:'#E1EBEF'},veg:{c:'#5F7350',s:'#E7EDE2'},prep:{c:'#7A5C8A',s:'#EEE6F1'},
+ soup:{c:'#A8622A',s:'#F7EADD'},bad:{c:'#A8402F',s:'#F7E2DE'}};
+const R={
+gulash:{emo:'🥘',k:'beef',name:'Гуляш из говядины',when:'Заготовка на 2 обеда',meta:['2 ч','Кастрюля','5 порций'],port:5,n:[755,45,32,60],
+ split:[['🥩','Мясо с соусом',509,'говядина 180 г + овощи и томаты'],['🌾','Булгур',246,'72 г сухого = ~200 г готового']],
+ keys:[['🌡️','Мясо комнатной температуры','Достань за 30 минут. Холодный кусок остудит сковороду.'],['🍳','Два захода, не один','Плотно уложенные куски выделяют пар вместо корочки.'],['🥄','Дно сковороды — это вкус','Коричневый налёт снять вином до последней крупинки.']],
+ ing:[['main','🥩','Говядина, шея или лопатка','900 г'],['main','🧅','Лук','200 г'],['main','🥕','Морковь','80 г'],['main','🧄','Чеснок','12 г'],['main','🥫','Томаты консерв.','400 г'],['main','🍅','Томатная паста','40 г'],['main','🍷','Красное вино','150 мл'],['main','🫒','Оливковое масло','20 мл (1,5 ст.л.)'],['main','🍬','Сахар','4 г'],['side','🌾','Булгур сухой','360 г']],
+ steps:[['Мясо кубиком 3–4 см, <b>обсушить бумагой</b>, оставить на 20–30 минут.','Влага испаряется первой и забирает энергию сковороды.'],['<b>10 мл масла</b>. Обжарить <b>в два захода</b> на сильном огне, по 4–5 минут.','Шипит громко и ровно.'],['Убрать мясо, <b>ещё 10 мл масла</b>. Лук с щепоткой сахара, 8 минут. Морковь и чеснок следом.',''],['Томатную пасту жарить 2 минуты до тёмного кирпичного цвета.','Сырая паста даёт кислую металлическую ноту.'],['Вино, <b>отскрести дно</b>, выпарить наполовину. Вернуть мясо, добавить томаты.',''],['Тушить под крышкой на минимальном огне <b>1,5–2 часа</b>.','Кусок разваливается от нажима ложкой.']],
+ chef:{t:'Тушёное вкуснее на второй день',p:'Коллаген превращается в желатин, но продолжает связывать вкус ещё сутки в холодильнике. Профессиональная кухня готовит рагу за день до подачи намеренно.'},q:'гуляш из говядины рецепт'},
+bulgur:{emo:'🌾',k:'prep',name:'Булгур впрок',when:'Заготовка на неделю',meta:['20 мин','Кастрюля','5 порций'],port:5,n:[275,9,4,46],
+ split:[['🌾','Булгур с маслом',275,'72 г сухого + 4 г масла']],
+ keys:[['💧','Пропорция 1 : 2','Стакан крупы — два стакана кипятка.'],['🔇','Крышку не открывать','Последние 10 минут доходит на пару.']],
+ ing:[['side','🌾','Булгур сухой','360 г'],['side','🧈','Сливочное масло','20 г'],['side','🧂','Соль','1 ч.л.']],
+ steps:[['Промыть до прозрачной воды.',''],['Кипятком <b>1 : 2</b>, посолить, довести до кипения, убавить.',''],['12–15 минут под крышкой, снять, постоять 10 минут.',''],['Взрыхлить вилкой, <b>20 г масла</b>, по контейнерам.','Остужай открытым.']],
+ chef:{t:'Крупу солят в воде, а не после',p:'Соль должна попасть внутрь зерна во время впитывания. Посоленная после варки крупа солёная снаружи и пресная внутри.'},q:'булгур рассыпчатый'},
+pork_ten:{emo:'🥓',k:'pork',name:'Свиная вырезка с фасолью',when:'Понедельник · ужин',meta:['20 мин','Сковорода','2 порции'],port:2,n:[691,55,24,59],
+ split:[['🥓','Мясо с чесночным маслом',390,'вырезка 200 г + масло'],['🫛','Фасоль и булгур',301,'фасоль 200 г + булгур 70 г']],
+ keys:[['🧂','Посолить за 10 минут','Соль вытянет влагу, растворится и уйдёт обратно как рассол.'],['✋','Не трогать 3 минуты','Кусок сам отпустит дно.'],['⏸️','Отдых 5 минут обязателен','Разрежешь сразу — весь сок на доске.']],
+ ing:[['main','🥓','Свиная вырезка','400 г'],['main','🧈','Сливочное масло','15 г'],['main','🧄','Чеснок','8 г'],['main','🫒','Оливковое масло','10 мл (2 ч.л.)'],['side','🫛','Фасоль стручковая','400 г'],['side','🌾','Булгур сухой','140 г']],
+ steps:[['Медальоны по 2 см, обсушить, посолить за 10 минут.',''],['<b>10 мл масла</b>, сковорода до дымка. <b>Не трогать 3 минуты</b>.','Не отрывается — корочка не готова.'],['Перевернуть, ещё 3 минуты. <b>15 г сливочного масла</b> и чеснок, поливать 30 секунд.','Внутри чуть розовым.'],['Снять, <b>отдых 5 минут</b>. Фасоль на оставшемся жире, 5 минут.','']],
+ chef:{t:'Поливание ложкой — метод, а не украшение',p:'Приём называется arroser. Горячее масло с чесноком доводит верх куска, пока низ стоит на сковороде. Наклони сковороду и лей 30–40 секунд не переставая.'},q:'свиная вырезка медальоны'},
+thighs:{emo:'🍗',k:'bird',name:'Бёдра с картофелем в духовке',when:'Вторник · ужин',meta:['50 мин','Духовка 200 °C','3 порции'],port:3,n:[761,59,35,54],
+ split:[['🍗','Бёдра без кожи',463,'270 г мяса + 5 мл масла'],['🥔','Картофель',298,'300 г + 7 мл масла']],
+ keys:[['🧻','Сухая поверхность','Промокни насухо и оставь в холодильнике на час.'],['🪜','Бёдра на решётке, картофель под ней','Жир стекает вниз.'],['🚫','Никакой фольги','Накрыл — создал парилку.']],
+ ing:[['main','🍗','Куриные бёдра без кожи','800 г'],['main','🫒','Оливковое масло','15 мл (1 ст.л.)'],['main','🌶️','Паприка','1 ч.л.'],['side','🥔','Картофель','900 г'],['side','🫒','Оливковое масло','20 мл (1,5 ст.л.)'],['side','🧄','Чеснок','16 г']],
+ steps:[['Бёдра <b>обсушить</b>, натереть солью, паприкой и <b>15 мл масла</b>, 20 минут.','Без кожи — жир падает с 70 до 35 г на порцию.'],['Картофель дольками: <b>20 мл масла</b>, соль, чеснок.',''],['Картофель на противень, бёдра <b>на решётку сверху</b>.',''],['200 °C, 40 минут. Последние 5 минут — гриль.','Готово при 74 °C.']],
+ chef:{t:'Сухой посол вместо маринада',p:'Натри солью и убери в холодильник открытыми на ночь. Соль уходит внутрь, поверхность подсыхает в потоке холодного воздуха.'},q:'куриные бедра в духовке'},
+cod:{emo:'🐟',k:'fish',name:'Треска с корочкой и брокколи',when:'Среда · ужин',meta:['15 мин','Сковорода','2 порции'],port:2,n:[609,47,16,69],
+ split:[['🐟','Рыба с лимонным маслом',325,'треска 200 г + мука и масло'],['🥦','Брокколи и рис',284,'брокколи 200 г + рис 60 г']],
+ keys:[['💦','Треска очень водянистая','Обсуши, посоли, подожди 10 минут, промокни снова.'],['🌾','Мука тончайшим слоем','Толстый слой отвалится пластом.'],['👀','Смотри на бок куска','Белеет снизу вверх. Переворачивай на половине.']],
+ ing:[['main','🐟','Треска или судак, филе','400 г'],['main','🌾','Мука','20 г'],['main','🧈','Сливочное масло','15 г'],['main','🫒','Оливковое масло','15 мл (1 ст.л.)'],['main','🍋','Лимон','30 г'],['side','🥦','Брокколи','400 г'],['side','🍚','Рис сухой','120 г']],
+ steps:[['Филе обсушить, посолить, 10 минут, промокнуть снова.',''],['Обвалять в муке, <b>стряхнуть излишки</b>.',''],['<b>15 мл масла</b>, сковорода горячая. 3 минуты <b>без движения</b>.',''],['Перевернуть, <b>15 г сливочного масла</b> и лимон, поливать 2 минуты. Брокколи на пару 5 минут.','Расслаивается на пласты.']],
+ chef:{t:'Рыбу кладут от себя и снимают одним движением',p:'Опускай филе движением от себя — брызги полетят в противоположную сторону. Лопатку подводи под кусок целиком и решительно.'},q:'треска на сковороде с корочкой'},
+soup_beef:{emo:'🍲',k:'soup',name:'Суп с говядиной и перловкой',when:'Четверг · ужин',meta:['1,5 ч','Кастрюля','4 порции'],port:4,n:[512,30,17,58],
+ split:[['🥩','Бульон с мясом',258,'говядина 125 г + овощи'],['🌾','Перловка, картофель, хлеб',255,'перловка 40 г + картофель 100 г']],
+ keys:[['🦴','Бульон не кипятить бурно','Едва заметное подрагивание поверхности.'],['🥄','Пену снимать первые 20 минут','Свернувшийся белок всплывает в начале.'],['🌾','Перловку варить отдельно','Она мутит суп.']],
+ ing:[['main','🥩','Говядина на кости','500 г'],['main','🧅','Лук','100 г'],['main','🥕','Морковь','80 г'],['main','🍃','Лавровый лист','2 шт'],['main','🌿','Петрушка','20 г'],['side','🌾','Перловка сухая','160 г'],['side','🥔','Картофель','400 г'],['side','🍞','Хлеб цельнозерновой','60 г']],
+ steps:[['Мясо залить холодной водой (2 л), довести до кипения, <b>снять пену</b>.','Холодная вода — белок всплывает пеной, а не оседает мутью.'],['Варить 1 час с луковицей целиком. Масло не нужно.',''],['Перловку отварить <b>отдельно</b> 40 минут, промыть.',''],['Мясо разобрать, вернуть. Картофель и морковь — 15 минут.',''],['Перловка, прогреть 5 минут. Петрушка <b>после огня</b>.','']],
+ chef:{t:'Обжаренная луковица меняет бульон',p:'Разрежь луковицу пополам и положи срезом на сухую сковороду до тёмных подпалин, потом в бульон. Карамелизованные сахара дают глубину и золотистый цвет.'},q:'суп с говядиной и перловкой'},
+bolo:{emo:'🍝',k:'beef',name:'Болоньезе',when:'Заготовка на 2 обеда',meta:['1,5 ч','Кастрюля','4 порции'],port:4,n:[972,60,28,107],
+ split:[['🥩','Соус с фаршем',527,'фарш 10% 175 г + томаты и молоко'],['🍝','Паста',445,'120 г сухой = ~260 г готовой']],
+ keys:[['🍳','Фарш в два захода','Дай нижнему слою схватиться коркой.'],['🍷','Вино строго до томатов','Кислота останавливает выпаривание спирта.'],['⏱️','Час — это минимум','Ложка оставляет дорожку по дну.']],
+ ing:[['main','🥩','Фарш говяжий 10%','700 г'],['main','🧅','Лук','100 г'],['main','🥕','Морковь','80 г'],['main','🥫','Томаты консерв.','800 г'],['main','🍷','Красное вино','150 мл'],['main','🥛','Молоко','150 мл'],['main','🫒','Оливковое масло','15 мл'],['main','🧀','Пармезан','50 г'],['side','🍝','Паста сухая','480 г']],
+ steps:[['<b>15 мл масла</b>. Фарш <b>в два захода</b>, разбивая не сразу.','Фарш 10% — минус 18 г жира на порцию.'],['Лук и морковь кубиком, 10 минут на вытопившемся жире.',''],['Вино, выпарить <b>до томатов</b>. Затем томаты, вернуть мясо.',''],['Тушить <b>минимум час</b> без крышки.',''],['Молоко, прогреть 10 минут. Пасту довести в соусе.','']],
+ chef:{t:'Паста доводится в соусе, а не под ним',p:'Откидывай за минуту до готовности и перекладывай в сковороду с половником воды от варки. Крахмал связывает жир и соус в эмульсию.'},q:'болоньезе рецепт'},
+pork_bake:{emo:'🔥',k:'pork',name:'Свинина, запечённая с овощами',when:'Пятница · обед',meta:['1 ч','Духовка 190 °C','4 порции'],port:4,n:[518,39,22,44],
+ split:[['🥓','Карбонад со специями',289,'мясо 175 г + 4 мл масла'],['🥔','Овощи из формы',229,'картофель 200 г + 5 мл масла']],
+ keys:[['🔪','Надрезать поверхность сеткой','Специи проникают глубже.'],['🌡️','Первые 15 минут — 220 °C','Схватить корочку, потом 190.'],['⏸️','Отдых 10 минут под фольгой','Крупный кусок дольше распределяет сок.']],
+ ing:[['main','🥓','Свиной карбонад','700 г'],['main','🫒','Оливковое масло','15 мл (1 ст.л.)'],['main','🧄','Чеснок','20 г'],['main','🌶️','Паприка, зира','по 1 ч.л.'],['side','🥔','Картофель','800 г'],['side','🥕','Морковь','150 г'],['side','🧅','Лук','150 г'],['side','🫒','Оливковое масло','20 мл (1,5 ст.л.)']],
+ steps:[['Надрезать сеткой, натереть солью, специями, чесноком и <b>15 мл масла</b>. 30 минут.','Карбонад вместо шеи — минус 15 г жира.'],['Овощи крупно, <b>20 мл масла</b>. Мясо <b>сверху на овощи</b>.',''],['220 °C 15 минут, затем 190 °C ещё 40 минут.',''],['Фольга, <b>10 минут отдыха</b>.','Внутри 71 °C.']],
+ chef:{t:'Мясо кладут на овощи, а не рядом',p:'Овощная подушка приподнимает кусок над дном формы. Низ мяса не варится в жидкости, а овощи получают всё, что стекает сверху.'},q:'свинина запеченная с овощами'},
+burger:{emo:'🍔',k:'bad',name:'Домашний бургер и пиво',when:'Пятница · ужин',meta:['20 мин','Сковорода','2 бургера'],port:2,n:[660,42,28,40],
+ split:[['🍔','Котлета с сыром',384,'фарш 150 г + чеддер 20 г'],['🍞','Булка',168,'60 г'],['🍺','Пиво',108,'250 мл']],
+ keys:[['🤲','Фарш не вымешивать','Рыхло собери в шар и придави.'],['🧂','Соль только снаружи','Соль внутри превращает котлету в резину.'],['🚫','Лопаткой не давить','Каждое нажатие выдавливает сок.']],
+ ing:[['main','🥩','Фарш говяжий 10%','300 г'],['main','🧀','Чеддер','40 г'],['main','🥫','Соус','25 г'],['main','🥒','Соленья','40 г'],['side','🍞','Булки','120 г'],['other','🍺','Пиво','500 мл']],
+ steps:[['Рыхло собрать в шар и придавить. Солить снаружи.','Масло не нужно — фарш даст свой жир.'],['<b>Ямка большим пальцем</b> в центре.','Иначе вздуется куполом.'],['Сковорода горячая, <b>без масла</b>. 3 минуты, перевернуть, сыр, ещё 2–3.','Не давить.'],['Булки разрезом на сухую сковороду 30 секунд.','']],
+ chef:{t:'Сыр плавят под крышкой, а не грилем',p:'Накрой сковороду на 40 секунд и плесни чайную ложку воды рядом с котлетой. Пар расплавит сыр, пока низ дожаривается.'},q:'домашний бургер котлета'},
+soup_chick:{emo:'🍜',k:'soup',name:'Куриный суп с лапшой и имбирём',when:'Суббота · ужин',meta:['50 мин','Кастрюля','3 порции'],port:3,n:[529,37,13,65],
+ split:[['🍗','Бульон с курицей',236,'бёдра 133 г + имбирь и морковь'],['🍜','Лапша и хлеб',293,'лапша 70 г + хлеб 20 г']],
+ keys:[['🫚','Имбирь и чеснок целиком','Крупными кусками, потом вынуть.'],['🍜','Лапшу варить отдельно','В бульоне разбухнет.'],['🌡️','Курицу не переваривать','Вынь, разбери, верни в конце.']],
+ ing:[['main','🍗','Куриные бёдра без кожи','400 г'],['main','🫚','Имбирь','20 г'],['main','🧄','Чеснок','12 г'],['main','🥕','Морковь','80 г'],['main','🌿','Кинза','20 г'],['main','🍋','Лимон','30 г'],['side','🍜','Лапша сухая','210 г'],['side','🍞','Хлеб цельнозерновой','60 г']],
+ steps:[['Залить холодной водой (1,5 л), <b>снять пену</b>. Масло не нужно.',''],['Имбирь пластинами и чеснок целиком. 30 минут на слабом огне.',''],['Курицу разобрать. Имбирь и чеснок выбросить.',''],['Морковь кружками, 7 минут. Лапша <b>отдельно</b>.',''],['Собрать в тарелке. Кинза и лимон <b>сверху</b>.','Кислота в конце поднимает вкус.']],
+ chef:{t:'Кислота в конце вместо соли',p:'Когда суп кажется плоским, попробуй пол-ложки лимонного сока: кислота обостряет восприятие остальных вкусов.'},q:'куриный суп с лапшой имбирь'},
+fish_bake:{emo:'🐠',k:'fish',name:'Рыба, запечённая с овощами',when:'Воскресенье · ужин',meta:['35 мин','Духовка 200 °C','2 порции'],port:2,n:[608,45,17,71],
+ split:[['🐟','Рыба с лимоном',223,'треска 200 г + 6 мл масла'],['🥔','Картофель и овощи',385,'картофель 350 г + 9 мл масла']],
+ keys:[['🥔','Овощи запекать первыми','Им нужно 20 минут, рыбе — 12.'],['🍋','Лимон под рыбу, а не сверху','Кислота сверху мешает подрумяниванию.'],['🌡️','Достать при 55 °C','Белая рыба доходит на остаточном жару.']],
+ ing:[['main','🐟','Треска или судак, филе','400 г'],['main','🍋','Лимон','40 г'],['main','🫒','Оливковое масло','12 мл (1 ст.л.)'],['side','🥔','Картофель','700 г'],['side','🫑','Перец болгарский','120 г'],['side','🍒','Черри','200 г'],['side','🫒','Оливковое масло','18 мл (1,5 ст.л.)'],['side','🌿','Петрушка','15 г']],
+ steps:[['Картофель кружками 3–4 мм, перец полосками, <b>18 мл масла</b>. <b>200 °C на 20 минут</b>.',''],['Кружки лимона, на них филе с <b>12 мл масла</b>. Черри вокруг.',''],['В духовку на <b>12 минут</b>.','Мякоть матовая, расслаивается вилкой.'],['Петрушка вне духовки.','']],
+ chef:{t:'Овощи режут тоньше, чем кажется нужным',p:'Картофель для запекания с рыбой — 3–4 мм. При такой толщине он пропекается за то же время, что и деликатный белок.'},q:'рыба запеченная с овощами'},
+quesa:{emo:'🫓',k:'veg',name:'ПП кесадья',when:'Завтрак',meta:['12 мин','Сковорода','1 порция'],port:1,n:[682,59,29,44],
+ split:[['🥚','Начинка',460,'2 яйца, сыр 60 г, индейка 60 г'],['🫓','Лаваш',192,'70 г'],['🥛','Йогурт',30,'50 г']],
+ keys:[['🧀','Сыр первым и последним слоем','Расплавленный сыр — клей конструкции.'],['🍳','Омлет плоским блином','Цельный пласт, а не скрэмбл.'],['⚖️','Лёгкий гнёт сверху','Равномерные подпалины.']],
+ ing:[['main','🥚','Яйца','2 шт (110 г)'],['main','🧀','Сыр высокобелковый','60 г'],['main','🦃','Индейка','60 г'],['main','🥓','Колбаса милано','15 г'],['main','🥬','Шпинат','15 г'],['main','🍒','Черри','30 г'],['main','🫒','Оливковое масло','3 мл'],['side','🫓','Лаваш','70 г'],['other','🥛','Йогурт греческий','50 г']],
+ steps:[['<b>3 мл масла</b>, яйца взбить, <b>тонкий плоский омлет</b>.',''],['На половину лаваша: сыр, индейка, колбаса, омлет, шпинат, черри.',''],['Сухая сковорода <b>без масла</b>, по 3 минуты под гнётом.','Сыр потёк по краю.'],['Разрезать, подать с йогуртом.','']],
+ chef:{t:'Дай постоять минуту перед разрезанием',p:'Расплавленный сыр ведёт себя как жидкость. Минута на доске — и он схватывается достаточно, чтобы резалось чисто.'},q:'кесадья с яйцом и сыром'},
+curd:{emo:'🫐',k:'veg',name:'Творог с ягодами и бананом',when:'Завтрак',meta:['5 мин','Без готовки','1 порция'],port:1,n:[495,39,17,53],
+ split:[['🧀','Творог',242,'200 г'],['🫐','Ягоды, банан, мёд, миндаль',253,'ягоды 100 г + банан + 12 г миндаля']],
+ keys:[['❄️','Ягоды достать заранее','Сок от размороженных ягод и есть соус.'],['⏳','Псиллиуму дать 2 минуты','Набухает и делает творог кремовым.']],
+ ing:[['main','🧀','Творог','200 г'],['other','🫐','Ягодная смесь','100 г'],['other','🍌','Банан','110 г'],['other','🍯','Мёд','10 г'],['other','🌰','Миндаль','12 г'],['other','🌾','Псиллиум','5 г']],
+ steps:[['Ягоды разморозить заранее.',''],['Творог размешать, псиллиум, 2 минуты.',''],['Ягоды, банан, мёд, миндаль сверху.','']],
+ chef:{t:'Щепотка соли в сладкое',p:'Соль подавляет восприятие горечи и поднимает сладость. Количество такое, чтобы саму соль не было слышно.'},q:''},
+omlet:{emo:'🍳',k:'veg',name:'Омлет со шпинатом и тостом',when:'Завтрак',meta:['10 мин','Сковорода','1 порция'],port:1,n:[554,38,31,33],
+ split:[['🥚','Омлет с сыром',381,'3 яйца + сыр 30 г + 8 г масла'],['🍞','Хлеб',148,'60 г'],['🥬','Овощи',25,'шпинат и черри']],
+ keys:[['💧','Воду из шпината слить полностью','Не сольёшь — омлет не схватится.'],['🔥','Огонь ниже, чем кажется','Румяный омлет — пережаренный омлет.'],['⏰','Снимать недоготовленным','Остаточное тепло доведёт середину.']],
+ ing:[['main','🥚','Яйца','3 шт (165 г)'],['main','🧀','Сыр высокобелковый','30 г'],['main','🧈','Сливочное масло','8 г'],['other','🥬','Шпинат','50 г'],['other','🍒','Черри','75 г'],['side','🍞','Хлеб цельнозерновой','60 г']],
+ steps:[['Шпинат на сухую сковороду, <b>слить воду</b>.',''],['Яйца взболтать вилкой, посолить.',''],['<b>8 г масла</b>, средне-слабый огонь, края к центру.',''],['Верх влажный — начинка, сложить, снять.','']],
+ chef:{t:'Французский омлет — это про терпение',p:'Сковорода должна быть такой, чтобы яйцо схватывалось медленно и не подрумянивалось. Слышно шипение — уже слишком горячо.'},q:'омлет со шпинатом'},
+sirniki:{emo:'🥞',k:'veg',name:'Сырники с ягодами',when:'Завтрак',meta:['20 мин','Сковорода','2 порции'],port:2,n:[447,45,18,27],
+ split:[['🧀','Сырники',321,'творог 200 г + яйцо'],['🌾','Мука',64,'17 г'],['🫐','Йогурт и ягоды',63,'йогурт 50 г + ягоды 40 г']],
+ keys:[['🧀','Творог должен быть сухим','Влажный отожми через марлю.'],['🌾','Муки минимум','35 г на 400 г творога.'],['🔥','Огонь средний','Сильный даст горелую корку и сырую середину.']],
+ ing:[['main','🧀','Творог','400 г'],['main','🥚','Яйцо','1 шт'],['main','🧈','Сливочное масло','10 г'],['side','🌾','Мука','35 г'],['other','🍯','Мёд','10 г'],['other','🥛','Йогурт греческий','100 г'],['other','🫐','Ягоды','80 г']],
+ steps:[['Творог протереть, яйцо, мука, мёд, соль. Охладить 20 минут.',''],['Шайбы 2 см, обвалять в муке, <b>стряхнуть излишки</b>.',''],['<b>10 г масла</b>, средний огонь, по 3–4 минуты под крышкой.','Крышка даёт пар.'],['Подать с йогуртом и ягодами.','']],
+ chef:{t:'Тесто охладить перед жаркой',p:'20 минут в холодильнике — мука связывает влагу. Сырники держат форму и не требуют лишней муки, от которой грубеют.'},q:'сырники из творога'},
+snack:{emo:'🥣',k:'veg',name:'Перекус: йогурт с яблоком',when:'Перекус',meta:['2 мин','Без готовки','1 порция'],port:1,n:[253,19,8,29],
+ split:[['🥛','Йогурт греческий',89,'150 г'],['🍎','Яблоко и миндаль',164,'яблоко 150 г + миндаль 15 г']],
+ keys:[['🥛','Йогурт без добавок','Фруктовые версии — до 15 г сахара на банку.']],
+ ing:[['other','🥛','Йогурт греческий','150 г'],['other','🍎','Яблоко','150 г'],['other','🌰','Миндаль','15 г']],
+ steps:[['Яблоко дольками, миндаль порубить, всё в йогурт.','']],
+ chef:{t:'Орехи рубить, а не бросать целыми',p:'Рубленый миндаль распределяется по всей порции. Целые орехи съедаются первыми, а остаток остаётся пресным.'},q:''},
+snack2:{emo:'🍌',k:'veg',name:'Перекус: йогурт с бананом',when:'Перекус',meta:['2 мин','Без готовки','1 порция'],port:1,n:[256,19,7,33],
+ split:[['🥛','Йогурт греческий',89,'150 г'],['🍌','Банан и миндаль',167,'банан 110 г + миндаль 12 г']],
+ keys:[['🍌','Банан для дней с нагрузкой','Быстрые углеводы после велосипеда.']],
+ ing:[['other','🥛','Йогурт греческий','150 г'],['other','🍌','Банан','110 г'],['other','🌰','Миндаль','12 г']],
+ steps:[['Банан кружками, миндаль порубить, всё в йогурт.','']],
+ chef:{t:'Банан режут перед подачей',p:'Нарезанный заранее банан темнеет за 10 минут из-за окисления. Сбрызни лимонным соком — кислота останавливает реакцию.'},q:''},
+salad:{emo:'🥗',k:'veg',name:'Салат к ужину',when:'Гарнир',meta:['5 мин','Без готовки','1 порция'],port:1,n:[128,3,9,12],
+ split:[['🥗','Овощи с маслом',128,'черри 150 г, перец 80 г, шпинат 40 г']],
+ keys:[['🫒','Масло добавлять последним','Соль на масле не растворится.']],
+ ing:[['side','🍒','Черри','150 г'],['side','🫑','Перец болгарский','80 г'],['side','🥬','Шпинат','40 г'],['side','🫒','Оливковое масло','8 мл']],
+ steps:[['Овощи нарезать, посолить, перемешать, потом <b>8 мл масла</b>.','']],
+ chef:{t:'Соль до масла, всегда',p:'Масло обволакивает поверхность овощей и не даёт соли раствориться в соке. Посоли сначала, дай минуту, потом заправляй.'},q:''}};
+
+const WEEK=[
+ {n:'01',dow:0,d:'Воскресенье',sub:'Закупка и заготовки',kcal:2058,dishes:[['quesa','Завтрак'],['soup_beef','Обед'],['snack2','Перекус'],['fish_bake','Ужин'],['gulash','Заготовка · впрок'],['bulgur','Заготовка · впрок']]},
+ {n:'02',dow:1,d:'Понедельник',sub:'Лёгкий старт',kcal:2199,dishes:[['quesa','Завтрак'],['gulash','Обед'],['snack','Перекус'],['pork_ten','Ужин'],['salad','Салат к ужину']]},
+ {n:'03',dow:2,d:'Вторник',sub:'Духовка',kcal:2216,dishes:[['sirniki','Завтрак'],['gulash','Обед'],['snack','Перекус'],['thighs','Ужин']]},
+ {n:'04',dow:3,d:'Среда',sub:'Рыбный день',kcal:2180,dishes:[['omlet','Завтрак'],['thighs','Обед'],['snack2','Перекус'],['cod','Ужин']]},
+ {n:'05',dow:4,d:'Четверг',sub:'Суп и заготовка',kcal:2419,dishes:[['quesa','Завтрак'],['bolo','Обед'],['snack','Перекус'],['soup_beef','Ужин']]},
+ {n:'06',dow:5,d:'Пятница',sub:'Разгрузка',kcal:1926,dishes:[['curd','Завтрак'],['pork_bake','Обед'],['snack','Перекус'],['burger','Ужин · вредное']]},
+ {n:'07',dow:6,d:'Суббота',sub:'Спокойный день',kcal:2436,dishes:[['quesa','Завтрак'],['bolo','Обед'],['snack','Перекус'],['soup_chick','Ужин']]}];
+
+const SCHOOL=[
+ {e:'🔥',t:'Жар и корочка',c:'#8C3F4A',rules:[['Сухая поверхность — условие номер один','Пока на мясе есть влага, температура поверхности не поднимется выше 100 °C. Реакция Майяра начинается от 140 °C.','Любое мясо перед сковородой промакивается бумагой.'],['Пустое место важнее размера порции','Плотная укладка наполняет сковороду паром, и жарка превращается в тушение.','Два захода почти всегда быстрее одного.'],['Сковорода отпускает сама','Когда белки схватились, кусок отходит без усилия.','Не отрывается — подожди 30 секунд.'],['Дно сковороды — концентрат вкуса','Коричневый налёт (фон) — карамелизованные белки и сахара. Влить жидкость и отскрести — дешёвый способ углубить соус.','']]},
+ {e:'🧂',t:'Соль и время',c:'#B07C2A',rules:[['Соль работает не мгновенно','Через 10–40 минут соль растворяется в вытянутом соке и уходит внутрь как рассол.','Медальоны — 10–15 минут. Птица — от часа до ночи.'],['Солить по слоям, а не в конце','Соль в конце ощущается отдельным вкусом поверх блюда.','Признак: блюдо кажется одновременно солёным и пресным.'],['Крупы и пасту солят в воде','Посоленная после варки крупа солёная снаружи и пресная внутри.',''],['Щепотка соли в сладкое','Соль подавляет горечь и за счёт этого поднимает сладость.','']]},
+ {e:'⚖️',t:'Жиры и подсчёт',c:'#6B7A4B',rules:[['Масло со сковороды считается почти полностью','Столовая ложка оливкового масла — 15 мл, это 133 ккал и 15 г жира. При жарке впитывается 70–90%.','Поэтому в рецептах указаны миллилитры, а не «немного масла».'],['Жирность мяса решает больше, чем гарнир','Свиная шея 267 ккал на 100 г, карбонад — 142. Фарш 20% против 10% — разница 74 ккал.','Замена куска даёт минус 15–20 г жира на порцию.'],['Кожа птицы — половина её жира','Бедро с кожей 211 ккал на 100 г, без кожи — 157.','Компромисс: снимать через раз.'],['Сухая крупа и готовая — разные числа','100 г сухого булгура — 342 ккал, после варки это ~280 г готового. Взвешивать нужно сухую.','В рецептах здесь везде сухой вес.']]},
+ {e:'🍲',t:'Бульоны и супы',c:'#A8622A',rules:[['Холодная вода на старте','Белок сворачивается медленно и всплывает пеной. Горячая вода запечатывает поверхность, и муть остаётся внутри.',''],['Бурное кипение мутит бульон','Бурное кипение эмульгирует жир — он расходится мелкими каплями и уже не собирается сверху.','Разница между прозрачным и мутным супом — только в силе огня.'],['Крупу и лапшу варить отдельно','Они мутят бульон, а к следующему дню разбухают.','Собирай в тарелке, а не в кастрюле.'],['Кислота в конце вместо соли','Кислота обостряет восприятие остальных вкусов и часто решает проблему, которую соль маскирует.','']]},
+ {e:'🌿',t:'Порядок закладки',c:'#5F7350',rules:[['Чем ароматнее, тем позже','Чеснок, травы, острое выгорают за пару минут и оставляют горечь.','Чеснок за 2–3 минуты до конца, зелень — после огня.'],['Сухие специи раскрывают в жире','Ароматические соединения жирорастворимы. Прогрей 30 секунд — отдача вырастет в разы.',''],['Томатную пасту обязательно обжаривать','Две минуты до тёмного кирпичного цвета — глубина вместо кислой ноты.',''],['Кислота идёт после спирта','Вино выпаривается до томатов.','']]},
+ {e:'📋',t:'Организация',c:'#4A6C7A',rules:[['Всё нарезано до включения плиты','Mise en place. Когда сковорода горячая, времени резать лук нет.','Кажется избыточным до первого подгоревшего чеснока.'],['Читай рецепт целиком до начала','Половина провалов — обнаружение на четвёртом шаге, что мясо нужно было мариновать час назад.',''],['Заготовки остужай открытыми','Горячее под крышкой даёт конденсат, который разжижает еду.',''],['Разогревай тем же способом, каким готовил','Хрустящее — в духовку. Тушёное — под крышкой. Микроволновка убивает корочку за 40 секунд.','']]}];
+
+const LIST=[
+ ['🥩','Мясо и птица',[['🥩','Говядина, шея или лопатка','900 г'],['🦴','Говядина на кости для супа','1 кг'],['🍖','Фарш говяжий 10%','1 кг'],['🥓','Свиная вырезка','400 г'],['🥓','Свиной карбонад','700 г'],['🍗','Куриные бёдра без кожи','1,2 кг'],['🌭','Колбаса милано','100 г'],['🦃','Индейка, нарезка','250 г']]],
+ ['🐟','Рыба',[['🐟','Треска или судак, филе','800 г']]],
+ ['🥛','Молочка и яйца',[['🥚','Яйца','20 шт'],['🧀','Сыр высокобелковый','400 г'],['🧀','Чеддер','50 г'],['🧀','Пармезан','100 г'],['🥣','Творог','900 г'],['🥛','Йогурт греческий','1,5 кг'],['🥛','Молоко','0,5 л'],['🧈','Сливочное масло','150 г'],['🍶','Кефир','1 л']]],
+ ['🥬','Овощи и зелень',[['🧅','Лук репчатый','1 кг'],['🥕','Морковь','800 г'],['🧄','Чеснок','2 головки'],['🫚','Имбирь','корень'],['🥔','Картофель','3,5 кг'],['🥒','Огурцы','6 шт'],['🍅','Помидоры','6 шт'],['🍒','Черри','800 г'],['🫑','Перец болгарский','400 г'],['🥬','Шпинат','300 г'],['🌿','Кинза','пучок'],['🌿','Петрушка','2 пучка'],['🍋','Лимон','3 шт']]],
+ ['❄️','Заморозка',[['🥦','Брокколи','400 г'],['🫛','Фасоль стручковая','400 г'],['🫐','Ягодная смесь','700 г']]],
+ ['🫙','Бакалея',[['🌾','Булгур','900 г'],['🌾','Перловка','300 г'],['🍚','Рис','200 г'],['🍝','Паста','500 г'],['🍜','Лапша','250 г'],['🌾','Мука','пачка'],['🍞','Хлеб цельнозерновой','2 буханки'],['🥫','Томаты консервированные','6 банок'],['🍅','Томатная паста','1 банка'],['🫒','Оливковое масло','бутылка'],['🌶️','Паприка','—'],['🧂','Зира','—'],['🍃','Лавровый лист','—'],['🌰','Миндаль','200 г'],['🫓','Лаваш','4 упак.'],['🍞','Булки для бургера','2 шт'],['🥄','Псиллиум','если кончился']]],
+ ['🍎','Фрукты',[['🍎','Яблоки','6 шт'],['🍌','Бананы','5 шт'],['🍯','Мёд','банка']]],
+ ['🍺','Пятница',[['🍺','Пиво','2 бут.'],['🥒','Соленья','банка'],['🥫','Соус для бургера','—']]]];
+
+/* ── состояние ── */
+const KEY='kuhnya_v6';
+let S={paid:{},trips:[],diary:{}};
+try{const raw=localStorage.getItem(KEY);if(raw)S=Object.assign(S,JSON.parse(raw))}catch(e){}
+let sel={};
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){alert('Не удалось сохранить. Возможно, включён приватный режим браузера.')}};
+const esc=s=>String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+const GOAL=[2300,155,85,200];
+const key=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const TODAY=key(new Date());
+let viewDay=TODAY;
+const dayOf=k=>{const[y,m,d]=k.split('-').map(Number);return new Date(y,m-1,d)};
+const DOWN=['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'];
+const DOWS=['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
+function ent(k){return S.diary[k]||(S.diary[k]=[])}
+function sums(k){const a=S.diary[k]||[];return a.reduce((s,x)=>[s[0]+x.n[0],s[1]+x.n[1],s[2]+x.n[2],s[3]+x.n[3]],[0,0,0,0])}
+function hasDish(k,id){return (S.diary[k]||[]).some(x=>x.id===id)}
+
+document.getElementById('hd-date').textContent=
+ DOWN[new Date().getDay()]+', '+new Date().toLocaleDateString('ru-RU',{day:'numeric',month:'long'});
+
+/* ── меню ── */
+const AVG=[2293,167,86,205];
+const wkHTML=`<div class="wk"><h3>Неделя против ориентира</h3><div class="wsub">Среднее по плану. Чёрная риска — цель.</div>
+ ${[['Калории',0,'ккал','#C2603C',2800],['Белки',1,'г','#8C3F4A',220],['Жиры',2,'г','#B07C2A',120],['Углеводы',3,'г','#5F7350',280]]
+  .map(([l,i,u,c,max])=>`<div class="wrow"><span class="wl">${l}</span>
+   <span class="wtrack"><i style="width:${Math.min(100,AVG[i]/max*100)}%;background:${c}"></i><u style="left:${GOAL[i]/max*100}%"></u></span>
+   <span class="wv">${AVG[i]} <s>/ ${GOAL[i]} ${u}</s></span></div>`).join('')}
+ <div class="wnote">Калории и белок сходятся точно. Жиры и углеводы доведены до <b>компромиссной цели 85 / 200</b> — постное мясо вместо жирного, гарниры увеличены. Отдельные дни гуляют ±250 ккал: важна неделя.</div></div>`;
+const TICKW='<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
+
+function renderMenu(){
+  const todayDow=new Date().getDay();
+  document.getElementById('p-menu').innerHTML=wkHTML+WEEK.map(w=>`
+  <section class="day">
+    <div class="day-h${w.dow===todayDow?' today':''}"><span class="dnum">${w.n}</span>
+      <span class="dwrap"><span class="dow">${w.d}</span><span class="dsub">${w.dow===todayDow?'сегодня · '+w.sub:w.sub}</span></span>
+      <span class="dkcal"><b>${w.kcal}</b><i>ккал</i></span></div>
+    ${w.dishes.map(([id,when])=>{const r=R[id],col=C[r.k],done=w.dow===todayDow&&hasDish(TODAY,id);
+      return `<div class="dish${done?' eaten':''}" style="--dc:${col.c};--soft:${col.s}">
+        <button class="eat${done?' on':''}" data-eat="${id}" aria-label="Отметить съеденным">${TICKW}</button>
+        <span class="demo">${r.emo}</span>
+        <span class="dtxt" data-r="${id}" role="button" tabindex="0"><span class="dwhen">${when}</span>
+          <span class="dname">${r.name}</span><span class="dmeta">${r.meta[0]} · ${r.meta[2]}</span></span>
+        <span class="dkc">${r.n[0]}<small>ккал</small></span></div>`}).join('')}
+  </section>`).join('');
+  document.querySelectorAll('[data-r]').forEach(b=>{
+    b.onclick=()=>{lastFocus=b;openR(b.dataset.r)};
+    b.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();lastFocus=b;openR(b.dataset.r)}}});
+  document.querySelectorAll('[data-eat]').forEach(b=>{
+    b.onclick=e=>{e.stopPropagation();toggleEat(b.dataset.eat)}});
+}
+function toggleEat(id){
+  const a=ent(TODAY),i=a.findIndex(x=>x.id===id);
+  if(i>=0)a.splice(i,1); else{const r=R[id];a.push({id:id,emo:r.emo,name:r.name,n:r.n.slice(),t:new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})})}
+  save();renderMenu();renderDiary();
+}
+
+/* ── дневник ── */
+function ring(v,goal){
+  const p=Math.min(1,v/goal),r=38,c=2*Math.PI*r,off=c*(1-p);
+  const col=v>goal*1.12?'#A8402F':v>goal*.85?'#D9A521':'#5F7350';
+  return `<svg width="92" height="92" viewBox="0 0 92 92">
+   <circle cx="46" cy="46" r="${r}" fill="none" stroke="rgba(255,255,255,.16)" stroke-width="9"/>
+   <circle cx="46" cy="46" r="${r}" fill="none" stroke="${col}" stroke-width="9" stroke-linecap="round"
+    stroke-dasharray="${c}" stroke-dashoffset="${off}" transform="rotate(-90 46 46)"/></svg>`;
+}
+function renderDiary(){
+  const days=[];
+  for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);days.push(key(d))}
+  const s=sums(viewDay),list=S.diary[viewDay]||[];
+  const dd=dayOf(viewDay);
+  const left=GOAL[0]-s[0];
+  document.getElementById('p-diary').innerHTML=`
+  <div class="d-nav">${days.map(k=>{const d=dayOf(k),has=(S.diary[k]||[]).length>0;
+    return `<button data-day="${k}" class="${k===viewDay?'on':''}${has?' has':''}"><i>${DOWS[d.getDay()]}</i><b>${d.getDate()}</b></button>`}).join('')}</div>
+  <div class="today-c">
+    <div class="today-h"><b>${DOWN[dd.getDay()]}</b><span>${viewDay===TODAY?'сегодня':dd.toLocaleDateString('ru-RU',{day:'numeric',month:'short'})}</span></div>
+    <div class="ring">${ring(s[0],GOAL[0])}
+      <div class="ring-t"><b>${s[0]}</b><i>из ${GOAL[0]} ккал</i>
+      <u style="color:${left<0?'#E8A598':'rgba(255,255,255,.75)'}">${left>=0?'осталось '+left:'перебор '+(-left)} ккал</u></div></div>
+    ${[['Белки',1,'#8C3F4A'],['Жиры',2,'#B07C2A'],['Углеводы',3,'#5F7350']].map(([l,i,c])=>`
+      <div class="mrow"><div class="mrow-t"><b>${l}</b><span>${s[i]} / ${GOAL[i]} г</span></div>
+      <div class="mtrack"><i style="width:${Math.min(100,s[i]/GOAL[i]*100)}%;background:${c}"></i></div></div>`).join('')}
+  </div>
+  <div class="quick">
+    <button data-q="Кофе с молоком|60|3|3|5">☕ Кофе</button>
+    <button data-q="Пиво 0,5|215|2|0|18">🍺 Пиво 0,5</button>
+    <button data-q="Обед в кафе|750|40|35|60">🍽️ Обед в кафе</button>
+    <button data-q="Хинкали 4 шт|520|28|22|52">🥟 Хинкали</button>
+  </div>
+  ${list.length?list.map((x,i)=>`<div class="ate"><em>${x.emo}</em>
+    <div><b>${esc(x.name)}</b><span>${x.t||''} · Б ${x.n[1]} · Ж ${x.n[2]} · У ${x.n[3]}</span></div>
+    <u>${x.n[0]}</u><button class="x" data-del="${i}" aria-label="Удалить">✕</button></div>`).join('')
+   :'<div class="none">Пока ничего не отмечено.<br>Ставь галочки на блюдах во вкладке «Меню»<br>или добавь своё кнопкой ниже.</div>'}
+  <button class="addbtn" id="add-own">＋ Добавить своё блюдо</button>`;
+  document.querySelectorAll('[data-day]').forEach(b=>b.onclick=()=>{viewDay=b.dataset.day;renderDiary()});
+  document.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{
+    (S.diary[viewDay]||[]).splice(+b.dataset.del,1);save();renderDiary();renderMenu()});
+  document.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{
+    const[n,k,p,f,c]=b.dataset.q.split('|');
+    ent(viewDay).push({emo:b.textContent.trim().slice(0,2),name:n,n:[+k,+p,+f,+c],
+      t:new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})});
+    save();renderDiary()});
+  document.getElementById('add-own').onclick=()=>{
+    ['a-name','a-kcal','a-p','a-f','a-c'].forEach(i=>document.getElementById(i).value='');
+    document.getElementById('addm').classList.add('on');document.body.style.overflow='hidden';
+    setTimeout(()=>document.getElementById('a-name').focus(),100)};
+}
+document.getElementById('a-no').onclick=()=>{document.getElementById('addm').classList.remove('on');document.body.style.overflow=''};
+document.getElementById('addm').onclick=e=>{if(e.target.id==='addm'){document.getElementById('addm').classList.remove('on');document.body.style.overflow=''}};
+document.getElementById('a-ok').onclick=()=>{
+  const n=document.getElementById('a-name').value.trim();
+  const k=parseFloat(document.getElementById('a-kcal').value)||0;
+  if(!n||!k){document.getElementById(n?'a-kcal':'a-name').focus();return}
+  ent(viewDay).push({emo:'🍽️',name:n,n:[Math.round(k),
+    Math.round(parseFloat(document.getElementById('a-p').value)||0),
+    Math.round(parseFloat(document.getElementById('a-f').value)||0),
+    Math.round(parseFloat(document.getElementById('a-c').value)||0)],
+    t:new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})});
+  save();document.getElementById('addm').classList.remove('on');document.body.style.overflow='';renderDiary()};
+
+/* ── рецепт ── */
+const sheet=document.getElementById('sheet'),scrim=document.getElementById('scrim');
+const GRP={main:'Основное',side:'Гарнир',other:'Дополнительно'};
+function openR(id){
+  const r=R[id],col=C[r.k],q=encodeURIComponent(r.q||r.name);
+  sheet.style.setProperty('--dc',col.c);sheet.style.setProperty('--soft',col.s);
+  const tot=r.split.reduce((a,b)=>a+b[2],0),cols=[col.c,'#B07C2A','#5F7350'];
+  let ig='',lastg='';
+  r.ing.forEach(([g,e,n,qq])=>{if(g!==lastg){ig+=`<div class="ing-g">${GRP[g]}</div>`;lastg=g}
+    ig+=`<div class="ir"><span>${e}</span><span>${n}</span><b>${qq}</b></div>`});
+  sheet.innerHTML=`<div class="grab"><i></i></div>
+   <div class="s-hero"><div class="s-emo">${r.emo}</div><div class="s-when">${r.when}</div>
+     <h2 class="s-name">${r.name}</h2><div class="s-meta">${r.meta.map(m=>`<span>${m}</span>`).join('')}</div></div>
+   <div class="s-sec">Пищевая ценность</div>
+   <div class="nut"><div class="nut-top"><b>${r.n[0]}</b><span>ккал<br>на 1 порцию из ${r.port}</span></div>
+     <div class="nut-m"><div><i>Белки</i><b>${r.n[1]}</b></div><div><i>Жиры</i><b>${r.n[2]}</b></div><div><i>Углеводы</i><b>${r.n[3]}</b></div></div>
+     <div class="nut-split"><i>Из чего складывается</i>
+       ${r.split.map(([e,l,k,d])=>`<div class="nsr"><em>${e}</em><span>${l}<small>${d}</small></span><b>${k}</b></div>`).join('')}
+       <div class="nut-bar">${r.split.map(([e,l,k],i)=>`<i style="width:${k/tot*100}%;background:${cols[i%3]}"></i>`).join('')}</div></div></div>
+   <div class="s-sec">Ключевые моменты</div>
+   <div class="keys">${r.keys.map(([e,t,d])=>`<div class="key"><em>${e}</em><div><b>${t}</b><span>${d}</span></div></div>`).join('')}</div>
+   ${r.q?`<div class="s-sec">Посмотреть как это выглядит</div><div class="look">
+    <a href="https://www.google.com/search?tbm=isch&q=${q}" target="_blank" rel="noopener"><em>🖼️</em>Фото этапов</a>
+    <a href="https://www.youtube.com/results?search_query=${q}" target="_blank" rel="noopener"><em>▶️</em>Видео</a></div>`:''}
+   <div class="s-sec">Что нужно · на ${r.port} ${r.port===1?'порцию':'порций'}</div>
+   <div class="ing">${ig}</div>
+   <div class="s-sec">Как готовить</div>
+   <div class="steps">${r.steps.map(([t,c],i)=>`<div class="step"><div class="snum">${i+1}</div>
+     <div class="stxt">${t}${c?`<span class="cue">${c}</span>`:''}</div></div>`).join('')}</div>
+   <div class="s-sec">Совет шефа</div>
+   <div class="chef"><i>👨‍🍳 Профессиональный приём</i><h4>${r.chef.t}</h4><p>${r.chef.p}</p></div>
+   <button class="close">Закрыть</button>`;
+  sheet.scrollTop=0;scrim.classList.add('on');sheet.classList.add('on');
+  document.body.style.overflow='hidden';
+  const cb=sheet.querySelector('.close');cb.onclick=closeR;cb.focus();
+}
+function closeR(){scrim.classList.remove('on');sheet.classList.remove('on');document.body.style.overflow='';if(lastFocus)lastFocus.focus()}
+scrim.onclick=closeR;
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){
+  if(sheet.classList.contains('on'))closeR();
+  ['pay','addm'].forEach(i=>{const m=document.getElementById(i);
+    if(m.classList.contains('on')){m.classList.remove('on');document.body.style.overflow=''}})}});
+
+/* ── школа ── */
+document.getElementById('p-school').innerHTML=
+ `<div class="sch-lead">Принципы, которые работают <b>во всех блюдах недели</b>. Разобравшись с ними, рецепты можно не перечитывать.</div>`+
+ SCHOOL.map((s,i)=>`<div class="sch${i===0?' open':''}" style="--sc:${s.c}">
+  <button class="sch-h" aria-expanded="${i===0}"><em>${s.e}</em><span>${s.t}</span><i>▾</i></button>
+  <div class="sch-b">${s.rules.map(([t,p1,p2])=>`<div class="rule"><b>${t}</b><p>${p1}</p>${p2?`<span class="why">${p2}</span>`:''}</div>`).join('')}</div></div>`).join('');
+document.querySelectorAll('.sch-h').forEach(h=>{h.onclick=()=>{const d=h.parentElement;d.classList.toggle('open');h.setAttribute('aria-expanded',d.classList.contains('open'))}});
+
+/* ── список ── */
+const TICK=TICKW;
+let TOTAL=0;const NAMES={};
+document.getElementById('p-list').innerHTML=
+ `<div class="hint">Отметь то, что <b>кладёшь в корзину сейчас</b>, затем нажми «Оформить» внизу и впиши сумму.</div>`+
+ LIST.map(([se,sn,arr])=>{TOTAL+=arr.length;
+  return `<div class="sec"><em>${se}</em><h3>${sn}</h3><i></i><b>${arr.length}</b></div>`+
+   arr.map(([e,n,q])=>{const id=sn+'|'+n;NAMES[id]=[e,n,q];
+     return `<button class="item" data-id="${esc(id)}" role="checkbox" aria-checked="false">
+      <span class="box">${TICK}</span><span class="iemo">${e}</span><span class="inm">${n}</span>
+      <span class="iqty">${q}</span></button>`}).join('')}).join('');
+function bindItems(){document.querySelectorAll('.item').forEach(el=>{
+  el.onclick=()=>{const id=el.dataset.id;
+    if(S.paid[id]){if(!confirm('Вернуть позицию в список? Сумма останется в чеке.'))return;
+      delete S.paid[id];save();renderList();return}
+    sel[id]=!sel[id];el.classList.toggle('sel',sel[id]);tray()}})}
+function renderList(){document.querySelectorAll('.item').forEach(el=>{
+  const id=el.dataset.id,[e,n,q]=NAMES[id];
+  el.className='item'+(S.paid[id]?' paid':'')+(sel[id]?' sel':'');
+  el.setAttribute('aria-checked',!!S.paid[id]);
+  el.innerHTML=`<span class="box">${TICK}</span><span class="iemo">${e}</span><span class="inm">${n}</span>`+
+   (S.paid[id]?'<span class="paidtag">куплено</span>':`<span class="iqty">${q}</span>`)});
+  bindItems();refresh()}
+function selIds(){return Object.keys(sel).filter(k=>sel[k]&&!S.paid[k])}
+function tray(){const n=selIds().length,t=document.getElementById('tray');
+ document.getElementById('t-n').textContent=n;
+ t.classList.toggle('on',n>0&&document.getElementById('p-list').classList.contains('on'))}
+document.getElementById('t-clr').onclick=()=>{sel={};renderList();tray()};
+const payEl=document.getElementById('pay');
+document.getElementById('t-pay').onclick=()=>{const ids=selIds();if(!ids.length)return;
+ document.getElementById('pay-sub').textContent=ids.length+' позиций уйдут в чек одной суммой';
+ document.getElementById('pay-list').innerHTML=ids.map(id=>{const[e,n,q]=NAMES[id];
+  return `<div><span>${e}</span><span>${n}</span><b>${q}</b></div>`}).join('');
+ document.getElementById('pay-name').value='';document.getElementById('pay-sum').value='';
+ payEl.classList.add('on');document.body.style.overflow='hidden';
+ setTimeout(()=>document.getElementById('pay-sum').focus(),100)};
+function closePay(){payEl.classList.remove('on');document.body.style.overflow=''}
+document.getElementById('pay-no').onclick=closePay;
+payEl.onclick=e=>{if(e.target===payEl)closePay()};
+document.getElementById('pay-ok').onclick=()=>{const ids=selIds();
+ const v=parseFloat(String(document.getElementById('pay-sum').value).replace(',','.'));
+ if(!v||v<=0){document.getElementById('pay-sum').focus();return}
+ S.trips.push({name:document.getElementById('pay-name').value.trim()||'Покупка',rub:Math.round(v),
+  items:ids.slice(),date:new Date().toLocaleDateString('ru-RU',{day:'numeric',month:'long'})});
+ ids.forEach(id=>{S.paid[id]=true;delete sel[id]});save();closePay();renderList();tray()};
+document.getElementById('pay-sum').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('pay-ok').click()});
+
+function refresh(){const done=Object.keys(S.paid).length,sum=S.trips.reduce((a,b)=>a+b.rub,0);
+ const pip=document.getElementById('pip');
+ if(done){pip.hidden=false;pip.textContent=done}else{pip.hidden=true}
+ document.getElementById('m-done').textContent=done+' из '+TOTAL;
+ document.getElementById('m-left').textContent=TOTAL-done;
+ document.getElementById('m-trips').textContent=S.trips.length;
+ document.getElementById('m-sum').textContent=sum.toLocaleString('ru-RU');
+ const p=Math.round(done/TOTAL*100);
+ document.getElementById('m-bar').style.width=p+'%';
+ document.getElementById('m-pct').textContent=done===0?'Корзина пуста':done===TOTAL?'Всё собрано 🎉':'Собрано '+p+'%';
+ document.getElementById('log').innerHTML=S.trips.length
+  ? S.trips.map((t,i)=>`<div class="trip"><div class="trip-h"><em>${esc(t.name)}</em>
+     <b>${t.rub.toLocaleString('ru-RU')} ₽</b><button class="x" data-i="${i}" aria-label="Удалить">✕</button></div>
+     <div class="trip-i">${t.items.map(id=>NAMES[id]?NAMES[id][0]+' '+NAMES[id][1]:'').filter(Boolean).join(' · ')}</div>
+     <div class="trip-d">${t.date} · ${t.items.length} позиций</div></div>`).join('')
+  : '<div class="none">Пока пусто.<br>Отметь продукты в списке и нажми «Оформить».</div>';
+ document.querySelectorAll('.trip .x').forEach(b=>b.onclick=()=>{
+  if(!confirm('Удалить покупку? Позиции вернутся в список.'))return;
+  const t=S.trips[+b.dataset.i];t.items.forEach(id=>delete S.paid[id]);
+  S.trips.splice(+b.dataset.i,1);save();renderList()})}
+
+/* ── экспорт/импорт ── */
+document.getElementById('export').onclick=()=>{
+  const blob=new Blob([JSON.stringify(S,null,1)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='kuhnya-'+TODAY+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
+document.getElementById('import-b').onclick=()=>document.getElementById('import-f').click();
+document.getElementById('import-f').onchange=e=>{
+  const f=e.target.files[0];if(!f)return;
+  const rd=new FileReader();
+  rd.onload=()=>{try{const d=JSON.parse(rd.result);
+    if(!d||typeof d!=='object')throw 0;
+    S={paid:d.paid||{},trips:d.trips||[],diary:d.diary||{}};
+    save();renderList();renderDiary();renderMenu();alert('Данные загружены.')}
+   catch(err){alert('Не удалось прочитать файл.')}};
+  rd.readAsText(f);e.target.value=''};
+document.getElementById('reset').onclick=()=>{
+  if(!confirm('Удалить все отметки, чеки и дневник? Это необратимо.'))return;
+  S={paid:{},trips:[],diary:{}};sel={};save();renderList();renderDiary();renderMenu();tray()};
+
+document.querySelectorAll('nav button').forEach(b=>{b.onclick=()=>{
+ document.querySelectorAll('nav button').forEach(x=>x.classList.remove('on'));
+ document.querySelectorAll('.panel').forEach(x=>x.classList.remove('on'));
+ b.classList.add('on');document.getElementById(b.dataset.p).classList.add('on');
+ window.scrollTo({top:0,behavior:'smooth'});tray()}});
+
+renderMenu();renderDiary();bindItems();renderList();
+</script>
+</body>
+</html>
